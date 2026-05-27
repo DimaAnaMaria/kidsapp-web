@@ -7,12 +7,36 @@ interface ProfileState {
   setActiveProfile: (p: ChildProfile) => void;
   setProfiles: (ps: ChildProfile[]) => void;
   clearProfiles: () => void;
+  initialize: () => void;
 }
 
 export const useProfileStore = create<ProfileState>((set) => ({
   activeProfile: null,
   profiles: [],
-  setActiveProfile: (p) => set({ activeProfile: p }),
-  setProfiles: (ps) => set({ profiles: ps, activeProfile: ps[0] || null }),
-  clearProfiles: () => set({ activeProfile: null, profiles: [] }),
+
+  setActiveProfile: (p) => {
+    localStorage.setItem('active_profile', JSON.stringify(p));
+    set({ activeProfile: p });
+  },
+
+  setProfiles: (ps) => {
+    const active = ps[0] || null;
+    if (active) localStorage.setItem('active_profile', JSON.stringify(active));
+    set({ profiles: ps, activeProfile: active });
+  },
+
+  clearProfiles: () => {
+    localStorage.removeItem('active_profile');
+    set({ activeProfile: null, profiles: [] });
+  },
+
+  initialize: () => {
+    const stored = localStorage.getItem('active_profile');
+    if (stored) {
+      try {
+        const profile = JSON.parse(stored) as ChildProfile;
+        set({ activeProfile: profile });
+      } catch {}
+    }
+  },
 }));
