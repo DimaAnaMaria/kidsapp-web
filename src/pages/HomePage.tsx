@@ -56,7 +56,7 @@ export default function HomePage() {
   async function fetchActivities(category: string) {
     setLoadingAll(true);
     try {
-      const params: any = { limit: 30 };
+      const params: any = { limit: 100 };
       if (category) params.category = category;
       if (activeProfile) params.age = activeProfile.child_age;
       const { data } = await api.get('/activities', { params });
