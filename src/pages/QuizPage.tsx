@@ -5,7 +5,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useProfileStore } from '../store/useProfileStore';
 import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../constants/theme';
 
-const QUESTIONS = [
+const QUESTIONS_TEEN = [
   { text: "Când ai timp liber, îți place să alergi sau să faci mișcare?", s: { sportiv: 2 } },
   { text: "Ești persoana care încearcă să îi împace pe ceilalți când apare un conflict?", s: { sociabil: 2 } },
   { text: "Te atrag activitățile cu aventură sau risc (escaladă, parc de aventură)?", s: { sportiv: 2 } },
@@ -32,8 +32,32 @@ const QUESTIONS = [
   { text: "Îți place să organizezi activități sau evenimente pentru prietenii tăi?", s: { sociabil: 2 } },
 ];
 
-const MAX: Record<string, number> = { sportiv: 0, artist: 0, pragmatic: 0, tehnic: 0, sociabil: 0 };
-QUESTIONS.forEach(q => Object.entries(q.s).forEach(([k, v]) => { MAX[k] = (MAX[k] || 0) + v * 2; }));
+const QUESTIONS_PARENT = [
+  { text: "În timpul liber, copilului tău îi place să alerge sau să facă mișcare?", s: { sportiv: 2 } },
+  { text: "Ai observat că el/ea încearcă să îi împace pe ceilalți când apare un conflict?", s: { sociabil: 2 } },
+  { text: "Copilul tău este atras de activitățile cu aventură sau risc (escaladă, parc de aventură)?", s: { sportiv: 2 } },
+  { text: "Îi place să exploreze locuri noi și să descopere lucruri necunoscute?", s: { sociabil: 2 } },
+  { text: "Crezi că este genul care își apără ideile cu entuziasm în fața celorlalți?", s: { pragmatic: 2 } },
+  { text: "Preferă jocurile de echipă în locul celor individuale?", s: { sportiv: 2, sociabil: 1 } },
+  { text: "Poate sta mult timp concentrat pe o singură sarcină (puzzle, lectură, proiect)?", s: { tehnic: 1, pragmatic: 1 } },
+  { text: "Ai observat că îi place să desfacă obiecte ca să înțeleagă cum funcționează?", s: { tehnic: 2 } },
+  { text: "Este foarte ordonat/ă și îi place ca totul să fie la locul lui?", s: { pragmatic: 2 } },
+  { text: "Are răbdare să repete un experiment sau joc de mai multe ori până reușește?", s: { tehnic: 1, pragmatic: 1 } },
+  { text: "Îl/o atrage ideea de a construi ceva de la zero (Lego, cod, mecanism)?", s: { tehnic: 2 } },
+  { text: "Preferă să citească instrucțiunile înainte de a începe un proiect nou?", s: { pragmatic: 2 } },
+  { text: "Îi place să imagineze lumi sau scenarii fantastice și neobișnuite?", s: { artist: 2 } },
+  { text: "Este atent/ă la detalii mici: culori, sunete sau texturi din jurul său?", s: { artist: 2 } },
+  { text: "Își exprimă emoțiile prin desen, muzică sau scriere?", s: { artist: 2 } },
+  { text: "Se simte uneori afectat/ă de critici pentru că pune mult suflet în ce face?", s: { artist: 1 } },
+  { text: "Preferă activitățile în care creează ceva estetic (pictură, olărit, colaje)?", s: { artist: 2 } },
+  { text: "Se simte inspirat/ă când vizitează un muzeu sau merge la un spectacol de teatru?", s: { artist: 2 } },
+  { text: "Își face prieteni noi cu ușurință și îi place să vorbească cu multă lume?", s: { sociabil: 2 } },
+  { text: "Îl/o atrag jocurile de strategie care necesită planificare și logică?", s: { tehnic: 2 } },
+  { text: "Îi place să participe la ateliere practice (gătit, meșteșuguri, bricolaj)?", s: { pragmatic: 2 } },
+  { text: "Găsește rapid soluții când apare o problemă neprevăzută?", s: { pragmatic: 1, tehnic: 1 } },
+  { text: "Preferă să lucreze pe calculator sau cu gadget-uri pentru a crea ceva util?", s: { tehnic: 2 } },
+  { text: "Îi place să organizeze activități sau evenimente pentru prietenii săi?", s: { sociabil: 2 } },
+];
 
 const OPTS = [
   { label: 'Nu prea',   value: 0, emoji: '😐' },
@@ -46,7 +70,14 @@ type Step = 'info' | 'quiz' | 'result';
 export default function QuizPage() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const isTeen   = user?.role === 'teen';
+  const isTeen = user?.role === 'teen';
+
+  // Alege setul de intrebari in functie de rol
+  const QUESTIONS = isTeen ? QUESTIONS_TEEN : QUESTIONS_PARENT;
+
+  // Calculeaza MAX dupa ce QUESTIONS e definit
+  const MAX: Record<string, number> = { sportiv: 0, artist: 0, pragmatic: 0, tehnic: 0, sociabil: 0 };
+  QUESTIONS.forEach(q => Object.entries(q.s).forEach(([k, v]) => { MAX[k] = (MAX[k] || 0) + v * 2; }));
 
   const [step,      setStep]      = useState<Step>(isTeen ? 'quiz' : 'info');
   const [childName, setChildName] = useState(isTeen ? (user?.firstName || 'Tu') : '');
@@ -84,7 +115,7 @@ export default function QuizPage() {
     setSaving(true);
     const { winner, pcts } = getWinner();
     try {
-      const { data } = await api.post('/profiles', {
+      await api.post('/profiles', {
         childName, childAge: parseInt(childAge), childGender: gender,
         dominantProfile: winner, scores: pcts, quizSource: isTeen ? 'self' : 'parent',
       });
@@ -102,7 +133,7 @@ export default function QuizPage() {
   const { winner, pcts } = step === 'result' ? getWinner() : { winner: '', pcts: {} };
   const resultColors = winner ? CATEGORY_COLORS[winner] : null;
 
-  // ── Ecran Info ────────────────────────────────────────────
+  // Ecran Info
   if (step === 'info') return (
     <div className="max-w-lg mx-auto px-4 py-8">
       <button onClick={() => navigate(-1)} className="text-sm text-gray-500 mb-6 block hover:text-gray-700">
@@ -110,7 +141,6 @@ export default function QuizPage() {
       </button>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Hai să ne cunoaștem! 👋</h1>
       <p className="text-gray-500 mb-8">Câteva detalii despre copilul pentru care completezi profilul</p>
-
       <form onSubmit={handleInfo} className="bg-white rounded-2xl p-8 border border-gray-200 flex flex-col gap-5">
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1.5">Prenumele copilului</label>
@@ -135,18 +165,16 @@ export default function QuizPage() {
             ))}
           </div>
         </div>
-        <button type="submit"
-          className="bg-gray-900 text-white py-3 rounded-full font-bold hover:opacity-90 mt-2">
+        <button type="submit" className="bg-gray-900 text-white py-3 rounded-full font-bold hover:opacity-90 mt-2">
           Continuă →
         </button>
       </form>
     </div>
   );
 
-  // ── Ecran Quiz ────────────────────────────────────────────
+  // Ecran Quiz
   if (step === 'quiz') return (
     <div className="max-w-lg mx-auto px-4 py-8">
-      {/* Progress */}
       <div className="mb-6">
         <div className="flex justify-between text-sm text-gray-400 mb-2">
           <span>Întrebarea {cur + 1} din {QUESTIONS.length}</span>
@@ -156,13 +184,9 @@ export default function QuizPage() {
           <div className="h-full bg-gray-900 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
         </div>
       </div>
-
-      {/* Intrebare */}
       <div className="bg-white rounded-2xl p-6 border border-gray-200 mb-4">
         <p className="text-lg font-medium text-gray-900 leading-relaxed">{QUESTIONS[cur].text}</p>
       </div>
-
-      {/* Optiuni */}
       <div className="flex flex-col gap-3">
         {OPTS.map(opt => (
           <button key={opt.value} onClick={() => handleAnswer(opt.value)}
@@ -175,10 +199,9 @@ export default function QuizPage() {
     </div>
   );
 
-  // ── Ecran Rezultat ────────────────────────────────────────
+  // Ecran Rezultat
   return (
     <div className="max-w-lg mx-auto px-4 py-8">
-      {/* Card profil */}
       {resultColors && (
         <div className="rounded-2xl p-10 mb-6 text-center" style={{ backgroundColor: resultColors.bg }}>
           <div className="text-6xl mb-4">{CATEGORY_ICONS[winner]}</div>
@@ -186,8 +209,6 @@ export default function QuizPage() {
           <h2 className="text-3xl font-bold" style={{ color: resultColors.text }}>{CATEGORY_LABELS[winner]}</h2>
         </div>
       )}
-
-      {/* Bare scoruri */}
       <div className="bg-white rounded-2xl p-6 border border-gray-200 mb-6">
         <h3 className="font-bold text-gray-900 mb-4">Distribuție completă</h3>
         <div className="flex flex-col gap-3">
@@ -206,8 +227,6 @@ export default function QuizPage() {
           ))}
         </div>
       </div>
-
-      {/* Butoane */}
       <button onClick={saveProfile} disabled={saving}
         className="w-full bg-gray-900 text-white py-3 rounded-full font-bold hover:opacity-90 disabled:opacity-50 mb-3">
         {saving ? 'Se salvează...' : '💾 Salvează profilul'}
