@@ -9,12 +9,16 @@ interface Props {
 
 export default function ActivityCard({ activity, onClick }: Props) {
   const colors = CATEGORY_COLORS[activity.category] || CATEGORY_COLORS.sociabil;
-  const icon   = CATEGORY_ICONS[activity.category] || '📌';
-  const label  = CATEGORY_LABELS[activity.category] || activity.category;
+  const icon = CATEGORY_ICONS[activity.category] || '📌';
+  const label = CATEGORY_LABELS[activity.category] || activity.category;
 
-  const priceLabel = activity.price === 0
+  const priceLabel = activity.price === 0 && activity.price_type === 'free'
     ? 'Gratuit'
-    : `${activity.price} RON/${activity.price_type === 'monthly' ? 'lună' : 'ședință'}`;
+    : activity.price_type === 'variable'
+      ? 'Nespecificat'
+      : activity.price === 0
+        ? 'Gratuit'
+        : `${activity.price} RON/${activity.price_type === 'monthly' ? 'lună' : 'ședință'}`;
 
   return (
     <div
@@ -55,8 +59,16 @@ export default function ActivityCard({ activity, onClick }: Props) {
         <span
           className="text-xs font-medium px-2 py-1 rounded-lg"
           style={{
-            backgroundColor: activity.price === 0 ? '#F0FBF6' : '#F7F3EE',
-            color: activity.price === 0 ? '#0A7A51' : '#6B6058',
+            backgroundColor: activity.price_type === 'free' || activity.price === 0
+              ? '#F0FBF6'
+              : activity.price_type === 'variable'
+                ? '#F1EFE8'
+                : '#F7F3EE',
+            color: activity.price_type === 'free' || activity.price === 0
+              ? '#0A7A51'
+              : activity.price_type === 'variable'
+                ? '#6B6058'
+                : '#6B6058',
           }}
         >
           {priceLabel}

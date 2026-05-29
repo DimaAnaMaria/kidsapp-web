@@ -47,9 +47,13 @@ export default function ActivityDetailPage() {
   );
 
   const colors     = CATEGORY_COLORS[activity.category] || CATEGORY_COLORS.sociabil;
-  const priceLabel = activity.price === 0
-    ? 'Gratuit'
-    : `${activity.price} RON/${activity.price_type === 'monthly' ? 'lună' : 'ședință'}`;
+  const priceLabel = activity.price === 0 && activity.price_type === 'free'
+  ? 'Gratuit'
+  : activity.price_type === 'variable'
+  ? 'Nespecificat'
+  : activity.price === 0
+  ? 'Gratuit'
+  : `${activity.price} RON/${activity.price_type === 'monthly' ? 'lună' : 'ședință'}`;
 
   async function handleSave() {
     if (!activeProfile) { alert('Completează mai întâi chestionarul de profil.'); return; }
