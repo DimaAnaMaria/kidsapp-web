@@ -10,7 +10,7 @@ interface ProfileState {
   initialize: () => void;
 }
 
-export const useProfileStore = create<ProfileState>((set) => ({
+export const useProfileStore = create<ProfileState>((set, get) => ({
   activeProfile: null,
   profiles: [],
 
@@ -20,9 +20,28 @@ export const useProfileStore = create<ProfileState>((set) => ({
   },
 
   setProfiles: (ps) => {
-    const active = ps[0] || null;
-    if (active) localStorage.setItem('active_profile', JSON.stringify(active));
-    set({ profiles: ps, activeProfile: active });
+    // Verifica daca exista un profil activ salvat in localStorage
+    const stored = localStorage.getItem('active_profile');
+    let activeProfile = ps[0] || null;
+
+    if (stored) {
+      try {
+        const storedProfile = JSON.parse(stored) as ChildProfile;
+        // Cauta profilul salvat in lista noua
+        const found = ps.find(p => p.id === storedProfile.id);
+        if (found) {
+          // Profilul salvat exista — pastreaza-l
+          activeProfile = found;
+        }
+      } catch {}
+    }
+
+    // Salveaza profilul activ in localStorage
+    if (activeProfile) {
+      localStorage.setItem('active_profile', JSON.stringify(activeProfile));
+    }
+
+    set({ profiles: ps, activeProfile });
   },
 
   clearProfiles: () => {
