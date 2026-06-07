@@ -30,7 +30,21 @@ export default function HomePage() {
       // Incarca profilurile
       try {
         const { data } = await api.get('/profiles');
-        if (data.data?.length > 0) setProfiles(data.data);
+        if (data.data?.length > 0) {
+          // Pastreaza profilul activ din localStorage daca exista
+          // Nu suprascrie selectia utilizatorului
+          const stored = localStorage.getItem('active_profile');
+          const storedProfile = stored ? JSON.parse(stored) : null;
+
+          if (storedProfile && data.data.find((p: any) => p.id === storedProfile.id)) {
+            // Profilul salvat exista inca — pastreaza-l
+            useProfileStore.getState().setProfiles(data.data);
+            useProfileStore.getState().setActiveProfile(storedProfile);
+          } else {
+            // Primul profil implicit
+            setProfiles(data.data);
+          }
+        }
       } catch { }
       // Incarca numarul de interactiuni al profilului activ
       if (activeProfile) {
