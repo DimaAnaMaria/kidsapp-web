@@ -5,18 +5,19 @@ import { useAuthStore } from '../store/useAuthStore';
 
 const ROLES = [
   { value: 'parent', label: '👨‍👩‍👧 Sunt părinte', desc: 'Creez profiluri pentru copiii mei' },
-  { value: 'teen',   label: '🧑 Sunt adolescent', desc: 'Îmi gestionez singur activitățile' },
+  { value: 'teen', label: '🧑 Sunt adolescent', desc: 'Îmi gestionez singur activitățile' },
 ];
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { login } = useAuthStore();
-  const [email,     setEmail]     = useState('');
-  const [password,  setPassword]  = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
-  const [role,      setRole]      = useState('parent');
-  const [error,     setError]     = useState('');
-  const [loading,   setLoading]   = useState(false);
+  const [role, setRole] = useState('parent');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [age, setAge] = useState('');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -62,11 +63,10 @@ export default function RegisterPage() {
                     key={r.value}
                     type="button"
                     onClick={() => setRole(r.value)}
-                    className={`p-3 rounded-xl border-2 text-left transition-all ${
-                      role === r.value
+                    className={`p-3 rounded-xl border-2 text-left transition-all ${role === r.value
                         ? 'border-gray-900 bg-gray-50'
                         : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                      }`}
                   >
                     <div className="text-sm font-medium text-gray-900">{r.label}</div>
                     <div className="text-xs text-gray-400 mt-0.5">{r.desc}</div>
@@ -81,6 +81,14 @@ export default function RegisterPage() {
                 placeholder="Ana" required
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-gray-400 bg-[#F7F3EE]" />
             </div>
+            {role === 'teen' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1.5">Vârsta ta</label>
+                <input type="number" value={age} onChange={e => setAge(e.target.value)}
+                  placeholder="ex: 15" min="10" max="18" required
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-gray-400 bg-[#F7F3EE]" />
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1.5">Email</label>
