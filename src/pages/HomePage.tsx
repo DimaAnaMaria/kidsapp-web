@@ -8,13 +8,13 @@ import { CATEGORIES, CATEGORY_ICONS, CATEGORY_LABELS } from '../constants/theme'
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { user }  = useAuthStore();
+  const { user } = useAuthStore();
   const { activeProfile, setProfiles } = useProfileStore();
 
-  const [recommended,    setRecommended]    = useState<Activity[]>([]);
-  const [activities,     setActivities]     = useState<Activity[]>([]);
-  const [loadingRec,     setLoadingRec]     = useState(false);
-  const [loadingAll,     setLoadingAll]     = useState(true);
+  const [recommended, setRecommended] = useState<Activity[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loadingRec, setLoadingRec] = useState(false);
+  const [loadingAll, setLoadingAll] = useState(true);
   const [activeCategory, setActiveCategory] = useState('');
   const [interactions, setInteractions] = useState(0);
 
@@ -31,27 +31,33 @@ export default function HomePage() {
       try {
         const { data } = await api.get('/profiles');
         if (data.data?.length > 0) setProfiles(data.data);
-      } catch {}
+      } catch { }
       // Incarca numarul de interactiuni al profilului activ
-if (activeProfile) {
-  api.get(`/profiles/${activeProfile.id}/interactions/count`)
-    .then(({ data }) => setInteractions(data.count || 0))
-    .catch(() => setInteractions(0));
-}
+      if (activeProfile) {
+        api.get(`/profiles/${activeProfile.id}/interactions/count`)
+          .then(({ data }) => setInteractions(data.count || 0))
+          .catch(() => setInteractions(0));
+      }
       await fetchActivities('');
     })();
   }, []);
 
   // Cand se schimba profilul activ, incarca recomandarile ML
   useEffect(() => {
-    if (activeProfile) fetchRecommendations();
+    if (activeProfile) {
+      fetchRecommendations();
+      // Actualizeaza si numarul de interactiuni
+      api.get(`/profiles/${activeProfile.id}/interactions/count`)
+        .then(({ data }) => setInteractions(data.count || 0))
+        .catch(() => setInteractions(0));
+    }
   }, [activeProfile?.id]);
 
   async function fetchRecommendations() {
     if (!activeProfile) return;
     setLoadingRec(true);
     try {
-      const { data } = await api.get(`/recommendations/${activeProfile.id}?n=6`);
+      const { data } = await api.get(`/recommendations/${activeProfile.id}?n=6&fresh=false`);
       setRecommended(data.data || []);
     } catch {
       // Daca ML-ul nu e disponibil, nu afisam sectiunea
@@ -68,7 +74,7 @@ if (activeProfile) {
       if (activeProfile) params.age = activeProfile.child_age;
       const { data } = await api.get('/activities', { params });
       setActivities(data.data || []);
-    } catch {}
+    } catch { }
     setLoadingAll(false);
   }
 
@@ -100,75 +106,75 @@ if (activeProfile) {
         </button>
       </div>
 
-   {/* ── SECTIUNEA RECOMANDATE ─────────────────────────── */}
-{activeProfile && (
-  <div className="mb-10">
-    <div className="flex items-start justify-between mb-3">
-      <div>
-        <h2 className="text-lg font-bold text-gray-900">
-          ✨ Recomandat pentru {activeProfile.child_name}
-        </h2>
-        <p className="text-sm text-gray-400 mt-0.5">
-          Bazat pe profilul {CATEGORY_LABELS[activeProfile.dominant_profile]} și preferințele tale
-        </p>
-      </div>
-      <button onClick={fetchRecommendations}
-        className="text-xs text-gray-400 hover:text-gray-600 transition-colors mt-1">
-        🔄 Reîmprospătează
-      </button>
-    </div>
+      {/* ── SECTIUNEA RECOMANDATE ─────────────────────────── */}
+      {activeProfile && (
+        <div className="mb-10">
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">
+                ✨ Recomandat pentru {activeProfile.child_name}
+              </h2>
+              <p className="text-sm text-gray-400 mt-0.5">
+                Bazat pe profilul {CATEGORY_LABELS[activeProfile.dominant_profile]} și preferințele tale
+              </p>
+            </div>
+            <button onClick={fetchRecommendations}
+              className="text-xs text-gray-400 hover:text-gray-600 transition-colors mt-1">
+              🔄 Reîmprospătează
+            </button>
+          </div>
 
- {/* Explicatie algoritm */}
-<div className="bg-white border border-gray-200 rounded-2xl p-4 mb-4">
-  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
-    Cum funcționează recomandările
-  </p>
-  <div className="grid grid-cols-3 gap-3">
-    <div className="flex flex-col items-center text-center gap-1.5">
-      <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-lg">🧭</div>
-      <div className="text-xs font-medium text-gray-700">Profil temperament</div>
-      <div className="text-xs text-gray-400">
-        {interactions < 10 ? '60%' : interactions < 50 ? '55%' : interactions < 100 ? '50%' : '45%'} din scor
-      </div>
-      <div className="w-full bg-gray-100 rounded-full h-1.5">
-        <div className="bg-purple-400 h-1.5 rounded-full transition-all duration-500"
-          style={{ width: interactions < 10 ? '60%' : interactions < 50 ? '55%' : interactions < 100 ? '50%' : '45%' }} />
-      </div>
-    </div>
-    <div className="flex flex-col items-center text-center gap-1.5">
-      <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-lg">⭐</div>
-      <div className="text-xs font-medium text-gray-700">Popularitate</div>
-      <div className="text-xs text-gray-400">
-        {interactions < 10 ? '35%' : interactions < 50 ? '30%' : interactions < 100 ? '25%' : '20%'} din scor
-      </div>
-      <div className="w-full bg-gray-100 rounded-full h-1.5">
-        <div className="bg-orange-400 h-1.5 rounded-full transition-all duration-500"
-          style={{ width: interactions < 10 ? '35%' : interactions < 50 ? '30%' : interactions < 100 ? '25%' : '20%' }} />
-      </div>
-    </div>
-    <div className="flex flex-col items-center text-center gap-1.5">
-      <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-lg">👥</div>
-      <div className="text-xs font-medium text-gray-700">Utilizatori similari</div>
-      <div className="text-xs text-gray-400">
-        {interactions < 10 ? '5%' : interactions < 50 ? '15%' : interactions < 100 ? '25%' : '35%'} din scor
-      </div>
-      <div className="w-full bg-gray-100 rounded-full h-1.5">
-        <div className="bg-green-400 h-1.5 rounded-full transition-all duration-500"
-          style={{ width: interactions < 10 ? '5%' : interactions < 50 ? '15%' : interactions < 100 ? '25%' : '35%' }} />
-      </div>
-    </div>
-  </div>
-  <p className="text-xs text-gray-400 mt-3 text-center">
-    {interactions === 0
-      ? 'Interacționează cu activități pentru recomandări mai precise'
-      : `Bazat pe ${interactions} interacțiuni — algoritmul învață din comportamentul tău`
-    }
-  </p>
-</div>
+          {/* Explicatie algoritm */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+              Cum funcționează recomandările
+            </p>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-col items-center text-center gap-1.5">
+                <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-lg">🧭</div>
+                <div className="text-xs font-medium text-gray-700">Profil temperament</div>
+                <div className="text-xs text-gray-400">
+                  {interactions < 10 ? '60%' : interactions < 50 ? '55%' : interactions < 100 ? '50%' : '45%'} din scor
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                  <div className="bg-purple-400 h-1.5 rounded-full transition-all duration-500"
+                    style={{ width: interactions < 10 ? '60%' : interactions < 50 ? '55%' : interactions < 100 ? '50%' : '45%' }} />
+                </div>
+              </div>
+              <div className="flex flex-col items-center text-center gap-1.5">
+                <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-lg">⭐</div>
+                <div className="text-xs font-medium text-gray-700">Popularitate</div>
+                <div className="text-xs text-gray-400">
+                  {interactions < 10 ? '35%' : interactions < 50 ? '30%' : interactions < 100 ? '25%' : '20%'} din scor
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                  <div className="bg-orange-400 h-1.5 rounded-full transition-all duration-500"
+                    style={{ width: interactions < 10 ? '35%' : interactions < 50 ? '30%' : interactions < 100 ? '25%' : '20%' }} />
+                </div>
+              </div>
+              <div className="flex flex-col items-center text-center gap-1.5">
+                <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-lg">👥</div>
+                <div className="text-xs font-medium text-gray-700">Utilizatori similari</div>
+                <div className="text-xs text-gray-400">
+                  {interactions < 10 ? '5%' : interactions < 50 ? '15%' : interactions < 100 ? '25%' : '35%'} din scor
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                  <div className="bg-green-400 h-1.5 rounded-full transition-all duration-500"
+                    style={{ width: interactions < 10 ? '5%' : interactions < 50 ? '15%' : interactions < 100 ? '25%' : '35%' }} />
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-gray-400 mt-3 text-center">
+              {interactions === 0
+                ? 'Interacționează cu activități pentru recomandări mai precise'
+                : `Bazat pe ${interactions} interacțiuni — algoritmul învață din comportamentul tău`
+              }
+            </p>
+          </div>
 
           {loadingRec ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1,2,3].map(i => (
+              {[1, 2, 3].map(i => (
                 <div key={i} className="bg-white rounded-2xl p-5 border border-gray-200 animate-pulse">
                   <div className="h-4 bg-gray-100 rounded mb-3 w-1/3" />
                   <div className="h-5 bg-gray-100 rounded mb-2" />
@@ -204,16 +210,14 @@ if (activeProfile) {
         {/* Filtre */}
         <div className="flex flex-wrap gap-2 mb-6">
           <button onClick={() => handleCategory('')}
-            className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-              !activeCategory ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
-            }`}>
+            className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${!activeCategory ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
+              }`}>
             Toate
           </button>
           {CATEGORIES.map(cat => (
             <button key={cat} onClick={() => handleCategory(cat)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                activeCategory === cat ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
-              }`}>
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition-all ${activeCategory === cat ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
+                }`}>
               <span>{CATEGORY_ICONS[cat]}</span>
               <span>{CATEGORY_LABELS[cat]}</span>
             </button>
