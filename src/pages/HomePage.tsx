@@ -93,23 +93,56 @@ export default function HomePage() {
         </button>
       </div>
 
-      {/* ── SECTIUNEA RECOMANDATE ─────────────────────────── */}
-      {activeProfile && (
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">
-                ✨ Recomandat pentru {activeProfile.child_name}
-              </h2>
-              <p className="text-sm text-gray-400 mt-0.5">
-                Bazat pe profilul {activeProfile.dominant_profile} și preferințele tale
-              </p>
-            </div>
-            <button onClick={fetchRecommendations}
-              className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
-              🔄 Reîmprospătează
-            </button>
+   {/* ── SECTIUNEA RECOMANDATE ─────────────────────────── */}
+{activeProfile && (
+  <div className="mb-10">
+    <div className="flex items-start justify-between mb-3">
+      <div>
+        <h2 className="text-lg font-bold text-gray-900">
+          ✨ Recomandat pentru {activeProfile.child_name}
+        </h2>
+        <p className="text-sm text-gray-400 mt-0.5">
+          Bazat pe profilul {CATEGORY_LABELS[activeProfile.dominant_profile]} și preferințele tale
+        </p>
+      </div>
+      <button onClick={fetchRecommendations}
+        className="text-xs text-gray-400 hover:text-gray-600 transition-colors mt-1">
+        🔄 Reîmprospătează
+      </button>
+    </div>
+
+    {/* Explicatie algoritm */}
+    <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-4">
+      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+        Cum funcționează recomandările
+      </p>
+      <div className="grid grid-cols-3 gap-3">
+        <div className="flex flex-col items-center text-center gap-1.5">
+          <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-lg">🧭</div>
+          <div className="text-xs font-medium text-gray-700">Profil temperament</div>
+          <div className="text-xs text-gray-400">60% din scor</div>
+          <div className="w-full bg-gray-100 rounded-full h-1.5">
+            <div className="bg-purple-400 h-1.5 rounded-full" style={{ width: '60%' }} />
           </div>
+        </div>
+        <div className="flex flex-col items-center text-center gap-1.5">
+          <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-lg">⭐</div>
+          <div className="text-xs font-medium text-gray-700">Popularitate</div>
+          <div className="text-xs text-gray-400">30% din scor</div>
+          <div className="w-full bg-gray-100 rounded-full h-1.5">
+            <div className="bg-orange-400 h-1.5 rounded-full" style={{ width: '30%' }} />
+          </div>
+        </div>
+        <div className="flex flex-col items-center text-center gap-1.5">
+          <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-lg">👥</div>
+          <div className="text-xs font-medium text-gray-700">Utilizatori similari</div>
+          <div className="text-xs text-gray-400">10% din scor</div>
+          <div className="w-full bg-gray-100 rounded-full h-1.5">
+            <div className="bg-green-400 h-1.5 rounded-full" style={{ width: '10%' }} />
+          </div>
+        </div>
+      </div>
+    </div>
 
           {loadingRec ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
