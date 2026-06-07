@@ -142,10 +142,10 @@ export default function QuizPage() {
         ← Înapoi
       </button>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Hai să ne cunoaștem! 👋</h1>
-      <p className="text-gray-500 mb-8">Câteva detalii despre copilul pentru care completezi profilul</p>
+      <p className="text-gray-500 mb-8">Câteva detalii mai intai</p>
       <form onSubmit={handleInfo} className="bg-white rounded-2xl p-8 border border-gray-200 flex flex-col gap-5">
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1.5">Prenumele copilului</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1.5">Prenumele</label>
           <input type="text" value={childName} onChange={e => setChildName(e.target.value)}
             placeholder="ex: Maria" required
             className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-gray-400 bg-[#F7F3EE]" />
