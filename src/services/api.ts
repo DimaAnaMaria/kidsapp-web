@@ -64,6 +64,7 @@ export interface User {
   role: string;
   firstName?: string;
   lastName?: string;
+  age?: number;
 }
 
 export interface ChildProfile {
