@@ -16,6 +16,7 @@ export default function HomePage() {
   const [loadingRec,     setLoadingRec]     = useState(false);
   const [loadingAll,     setLoadingAll]     = useState(true);
   const [activeCategory, setActiveCategory] = useState('');
+  const [interactions, setInteractions] = useState(0);
 
   const greeting = () => {
     const h = new Date().getHours();
@@ -31,6 +32,12 @@ export default function HomePage() {
         const { data } = await api.get('/profiles');
         if (data.data?.length > 0) setProfiles(data.data);
       } catch {}
+      // Incarca numarul de interactiuni al profilului activ
+if (activeProfile) {
+  api.get(`/profiles/${activeProfile.id}/interactions/count`)
+    .then(({ data }) => setInteractions(data.count || 0))
+    .catch(() => setInteractions(0));
+}
       await fetchActivities('');
     })();
   }, []);
@@ -111,38 +118,53 @@ export default function HomePage() {
       </button>
     </div>
 
-    {/* Explicatie algoritm */}
-    <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-4">
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
-        Cum funcționează recomandările
-      </p>
-      <div className="grid grid-cols-3 gap-3">
-        <div className="flex flex-col items-center text-center gap-1.5">
-          <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-lg">🧭</div>
-          <div className="text-xs font-medium text-gray-700">Profil temperament</div>
-          <div className="text-xs text-gray-400">60% din scor</div>
-          <div className="w-full bg-gray-100 rounded-full h-1.5">
-            <div className="bg-purple-400 h-1.5 rounded-full" style={{ width: '60%' }} />
-          </div>
-        </div>
-        <div className="flex flex-col items-center text-center gap-1.5">
-          <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-lg">⭐</div>
-          <div className="text-xs font-medium text-gray-700">Popularitate</div>
-          <div className="text-xs text-gray-400">30% din scor</div>
-          <div className="w-full bg-gray-100 rounded-full h-1.5">
-            <div className="bg-orange-400 h-1.5 rounded-full" style={{ width: '30%' }} />
-          </div>
-        </div>
-        <div className="flex flex-col items-center text-center gap-1.5">
-          <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-lg">👥</div>
-          <div className="text-xs font-medium text-gray-700">Utilizatori similari</div>
-          <div className="text-xs text-gray-400">10% din scor</div>
-          <div className="w-full bg-gray-100 rounded-full h-1.5">
-            <div className="bg-green-400 h-1.5 rounded-full" style={{ width: '10%' }} />
-          </div>
-        </div>
+ {/* Explicatie algoritm */}
+<div className="bg-white border border-gray-200 rounded-2xl p-4 mb-4">
+  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+    Cum funcționează recomandările
+  </p>
+  <div className="grid grid-cols-3 gap-3">
+    <div className="flex flex-col items-center text-center gap-1.5">
+      <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-lg">🧭</div>
+      <div className="text-xs font-medium text-gray-700">Profil temperament</div>
+      <div className="text-xs text-gray-400">
+        {interactions < 10 ? '60%' : interactions < 50 ? '55%' : interactions < 100 ? '50%' : '45%'} din scor
+      </div>
+      <div className="w-full bg-gray-100 rounded-full h-1.5">
+        <div className="bg-purple-400 h-1.5 rounded-full transition-all duration-500"
+          style={{ width: interactions < 10 ? '60%' : interactions < 50 ? '55%' : interactions < 100 ? '50%' : '45%' }} />
       </div>
     </div>
+    <div className="flex flex-col items-center text-center gap-1.5">
+      <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-lg">⭐</div>
+      <div className="text-xs font-medium text-gray-700">Popularitate</div>
+      <div className="text-xs text-gray-400">
+        {interactions < 10 ? '35%' : interactions < 50 ? '30%' : interactions < 100 ? '25%' : '20%'} din scor
+      </div>
+      <div className="w-full bg-gray-100 rounded-full h-1.5">
+        <div className="bg-orange-400 h-1.5 rounded-full transition-all duration-500"
+          style={{ width: interactions < 10 ? '35%' : interactions < 50 ? '30%' : interactions < 100 ? '25%' : '20%' }} />
+      </div>
+    </div>
+    <div className="flex flex-col items-center text-center gap-1.5">
+      <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-lg">👥</div>
+      <div className="text-xs font-medium text-gray-700">Utilizatori similari</div>
+      <div className="text-xs text-gray-400">
+        {interactions < 10 ? '5%' : interactions < 50 ? '15%' : interactions < 100 ? '25%' : '35%'} din scor
+      </div>
+      <div className="w-full bg-gray-100 rounded-full h-1.5">
+        <div className="bg-green-400 h-1.5 rounded-full transition-all duration-500"
+          style={{ width: interactions < 10 ? '5%' : interactions < 50 ? '15%' : interactions < 100 ? '25%' : '35%' }} />
+      </div>
+    </div>
+  </div>
+  <p className="text-xs text-gray-400 mt-3 text-center">
+    {interactions === 0
+      ? 'Interacționează cu activități pentru recomandări mai precise'
+      : `Bazat pe ${interactions} interacțiuni — algoritmul învață din comportamentul tău`
+    }
+  </p>
+</div>
 
           {loadingRec ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
