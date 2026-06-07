@@ -60,9 +60,9 @@ const QUESTIONS_PARENT = [
 ];
 
 const OPTS = [
-  { label: 'Nu prea',   value: 0, emoji: '😐' },
-  { label: 'Uneori',   value: 1, emoji: '🤔' },
-  { label: 'Da, mult!', value: 2, emoji: '😄' },
+  { label: 'Nu', value: 0, emoji: '😐' },
+  { label: 'Uneori', value: 1, emoji: '🤔' },
+  { label: 'Da', value: 2, emoji: '😄' },
 ];
 
 type Step = 'info' | 'quiz' | 'result';
@@ -79,13 +79,13 @@ export default function QuizPage() {
   const MAX: Record<string, number> = { sportiv: 0, artist: 0, pragmatic: 0, tehnic: 0, sociabil: 0 };
   QUESTIONS.forEach(q => Object.entries(q.s).forEach(([k, v]) => { MAX[k] = (MAX[k] || 0) + v * 2; }));
 
-  const [step,      setStep]      = useState<Step>(isTeen ? 'quiz' : 'info');
+  const [step, setStep] = useState<Step>('info');
   const [childName, setChildName] = useState(isTeen ? (user?.firstName || 'Tu') : '');
-  const [childAge,  setChildAge]  = useState(isTeen ? '16' : '');
-  const [gender,    setGender]    = useState('nespecificat');
-  const [cur,       setCur]       = useState(0);
-  const [scores,    setScores]    = useState<Record<string, number>>({ sportiv: 0, artist: 0, pragmatic: 0, tehnic: 0, sociabil: 0 });
-  const [saving,    setSaving]    = useState(false);
+  const [childAge, setChildAge] = useState(isTeen ? '' : '');
+  const [gender, setGender] = useState('nespecificat');
+  const [cur, setCur] = useState(0);
+  const [scores, setScores] = useState<Record<string, number>>({ sportiv: 0, artist: 0, pragmatic: 0, tehnic: 0, sociabil: 0 });
+  const [saving, setSaving] = useState(false);
 
   function handleInfo(e: React.FormEvent) {
     e.preventDefault();
@@ -132,6 +132,31 @@ export default function QuizPage() {
   const progress = Math.round((cur / QUESTIONS.length) * 100);
   const { winner, pcts } = step === 'result' ? getWinner() : { winner: '', pcts: {} };
   const resultColors = winner ? CATEGORY_COLORS[winner] : null;
+
+  // Ecran varsta pentru teen
+  if (step === 'info' && isTeen) return (
+    <div className="max-w-lg mx-auto px-4 py-8">
+      <button onClick={() => navigate(-1)} className="text-sm text-gray-500 mb-6 block">← Înapoi</button>
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Câți ani ai? 🎂</h1>
+      <p className="text-gray-500 mb-8">Avem nevoie de vârsta ta pentru recomandări potrivite</p>
+      <div className="bg-white rounded-2xl p-8 border border-gray-200">
+        <input type="number" value={childAge} onChange={e => setChildAge(e.target.value)}
+          placeholder="ex: 15" min="10" max="18"
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-center text-2xl font-bold focus:outline-none focus:border-gray-400 bg-[#F7F3EE] mb-6" />
+        <button
+          onClick={() => {
+            if (!childAge || parseInt(childAge) < 10 || parseInt(childAge) > 18) {
+              alert('Vârsta trebuie să fie între 10 și 18 ani');
+              return;
+            }
+            setStep('quiz');
+          }}
+          className="w-full bg-gray-900 text-white py-3 rounded-full font-bold hover:opacity-90">
+          Continuă →
+        </button>
+      </div>
+    </div>
+  );
 
   // Ecran Info
   if (step === 'info') return (
