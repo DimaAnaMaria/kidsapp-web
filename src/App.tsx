@@ -19,7 +19,7 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
 
 function Layout({ children }: { children: JSX.Element }) {
   return (
-    <div className="min-h-screen bg-[#F7F3EE]">
+    <div className="min-h-screen" style={{ backgroundColor: '#FDF0EE' }}>
       <Navbar />
       <main>{children}</main>
     </div>
