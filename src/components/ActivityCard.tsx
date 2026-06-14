@@ -1,78 +1,108 @@
 import React from 'react';
 import { Activity } from '../services/api';
 import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../constants/theme';
+import { getActivityImage } from '../constants/images';
 
 interface Props {
   activity: Activity;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export default function ActivityCard({ activity, onClick }: Props) {
   const colors = CATEGORY_COLORS[activity.category] || CATEGORY_COLORS.sociabil;
-  const icon = CATEGORY_ICONS[activity.category] || '📌';
-  const label = CATEGORY_LABELS[activity.category] || activity.category;
 
-  const priceLabel = activity.price === 0 && activity.price_type === 'free'
-    ? 'Gratuit'
-    : activity.price_type === 'variable'
+  const priceLabel =
+    activity.price_type === 'free' || activity.price === 0
+      ? 'Gratuit'
+      : activity.price_type === 'variable'
       ? 'Nespecificat'
-      : activity.price === 0
-        ? 'Gratuit'
-        : `${activity.price} RON/${activity.price_type === 'monthly' ? 'lună' : 'ședință'}`;
+      : `${activity.price} RON/${activity.price_type === 'monthly' ? 'lună' : 'ședință'}`;
+
+  const priceColor =
+    activity.price_type === 'free' || activity.price === 0
+      ? { bg: '#F0FBF6', text: '#0A7A51' }
+      : { bg: '#F1EFE8', text: '#6B6058' };
+
+  const imageSrc = getActivityImage(
+    activity.id,
+    activity.subcategory,
+    activity.category
+  );
 
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-2xl p-5 border border-gray-200 cursor-pointer hover:border-gray-400 hover:shadow-md transition-all duration-150"
+      className="bg-white rounded-2xl border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col"
     >
-      {/* Badge categorie */}
-      <div
-        className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold mb-3"
-        style={{ backgroundColor: colors.bg, color: colors.text }}
-      >
-        <span>{icon}</span>
-        <span>{label}</span>
+      {/* ── Imagine activitate ── */}
+      <div className="relative w-full h-36 overflow-hidden flex-shrink-0">
+        <img
+          src={imageSrc}
+          alt={activity.title}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            // Daca imaginea nu se incarca, afisam fundalul colorat al categoriei
+            const target = e.currentTarget;
+            target.style.display = 'none';
+            const parent = target.parentElement;
+            if (parent) {
+              parent.style.backgroundColor = colors.bg;
+              parent.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem">${CATEGORY_ICONS[activity.category]}</div>`;
+            }
+          }}
+        />
+        {/* Overlay subtil pentru a proteja textul de deasupra */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
       </div>
 
-      {/* Titlu */}
-      <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2">
-        {activity.title}
-      </h3>
+      {/* ── Continut card ── */}
+      <div className="p-4 flex flex-col gap-2 flex-1">
 
-      {/* Descriere */}
-      {activity.short_description && (
-        <p className="text-sm text-gray-500 mb-3 line-clamp-2">
-          {activity.short_description}
-        </p>
-      )}
-
-      {/* Footer */}
-      <div className="flex items-end justify-between mt-2">
-        <div className="flex flex-col gap-1">
-          {activity.zone && (
-            <span className="text-xs text-gray-400">📍 {activity.zone}</span>
-          )}
-          <span className="text-xs text-gray-400">
-            👶 {activity.age_min}–{activity.age_max} ani
+        {/* Badge categorie */}
+        <div className="flex items-center gap-1.5">
+          <span
+            className="text-xs font-semibold px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: colors.bg, color: colors.text }}
+          >
+            {CATEGORY_ICONS[activity.category]} {CATEGORY_LABELS[activity.category]}
           </span>
         </div>
-        <span
-          className="text-xs font-medium px-2 py-1 rounded-lg"
-          style={{
-            backgroundColor: activity.price_type === 'free' || activity.price === 0
-              ? '#F0FBF6'
-              : activity.price_type === 'variable'
-                ? '#F1EFE8'
-                : '#F7F3EE',
-            color: activity.price_type === 'free' || activity.price === 0
-              ? '#0A7A51'
-              : activity.price_type === 'variable'
-                ? '#6B6058'
-                : '#6B6058',
-          }}
-        >
-          {priceLabel}
-        </span>
+
+        {/* Titlu */}
+        <h3 className="font-bold text-gray-900 text-sm leading-snug line-clamp-2">
+          {activity.title}
+        </h3>
+
+        {/* Descriere scurta (daca exista) */}
+        {activity.short_description && (
+          <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+            {activity.short_description}
+          </p>
+        )}
+
+        {/* Footer: locatie, varsta, pret */}
+        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+          <div className="flex flex-col gap-0.5">
+            {activity.zone && (
+              <span className="text-xs text-gray-400 flex items-center gap-1">
+                <span>📍</span>
+                <span>{activity.zone}</span>
+              </span>
+            )}
+            <span className="text-xs text-gray-400 flex items-center gap-1">
+              <span>🎂</span>
+              <span>{activity.age_min}–{activity.age_max} ani</span>
+            </span>
+          </div>
+
+          {/* Pret */}
+          <span
+            className="text-xs font-semibold px-2 py-1 rounded-lg whitespace-nowrap"
+            style={{ backgroundColor: priceColor.bg, color: priceColor.text }}
+          >
+            {priceLabel}
+          </span>
+        </div>
       </div>
     </div>
   );
