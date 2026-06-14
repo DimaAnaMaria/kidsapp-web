@@ -17,6 +17,8 @@ export default function HomePage() {
   const [loadingAll, setLoadingAll] = useState(true);
   const [activeCategory, setActiveCategory] = useState('');
   const [interactions, setInteractions] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const greeting = () => {
     const h = new Date().getHours();
@@ -81,6 +83,7 @@ export default function HomePage() {
   async function handleCategory(cat: string) {
     const next = activeCategory === cat ? '' : cat;
     setActiveCategory(next);
+    setCurrentPage(1);
     await fetchActivities(next);
   }
 
@@ -233,12 +236,50 @@ export default function HomePage() {
             <div className="font-medium">Nicio activitate găsită</div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {activities.map(activity => (
-              <ActivityCard key={activity.id} activity={activity}
-                onClick={() => navigate(`/activity/${activity.id}`, { state: { activity } })} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {activities
+                .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+                .map(activity => (
+                  <ActivityCard key={activity.id} activity={activity}
+                    onClick={() => navigate(`/activity/${activity.id}`, { state: { activity } })} />
+                ))}
+            </div>
+
+            {/* Paginare */}
+            {activities.length > ITEMS_PER_PAGE && (
+              <div className="flex items-center justify-center gap-2 mt-8">
+                <button
+                  onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo(0, 0); }}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:border-gray-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                >
+                  ← Anterior
+                </button>
+
+                {Array.from({ length: Math.ceil(activities.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map(page => (
+                  <button
+                    key={page}
+                    onClick={() => { setCurrentPage(page); window.scrollTo(0, 0); }}
+                    className={`w-9 h-9 rounded-full text-sm font-medium transition-all ${currentPage === page
+                        ? 'bg-gray-900 text-white'
+                        : 'border border-gray-200 text-gray-600 hover:border-gray-400'
+                      }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => { setCurrentPage(p => Math.min(Math.ceil(activities.length / ITEMS_PER_PAGE), p + 1)); window.scrollTo(0, 0); }}
+                  disabled={currentPage === Math.ceil(activities.length / ITEMS_PER_PAGE)}
+                  className="px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-600 hover:border-gray-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                >
+                  Următor →
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
