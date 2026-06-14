@@ -30,8 +30,8 @@ export const SUBCATEGORY_IMAGES: Record<string, string> = {
   'dans si coregrafie':  `${BASE}/sportiv_dans.jpg`,
   'zumba':               `${BASE}/sportiv_dans.jpg`,
   'gimnastica ritmica':  `${BASE}/sportiv_gimnastica.jpg`,
-  'trampoline park':     `${BASE}/sportiv_generic2.jpg`,
-  'parc aventura':       `${BASE}/sportiv_generic2.jpg`,
+  'trampoline park':     `${BASE}/sportiv_trambulina.jpg`,
+  'parc aventura':       `${BASE}/sportiv_trambulina.jpg`,
   'laser tag':           `${BASE}/sociabil_lasertag.jpg`,
   'sport':               `${BASE}/sportiv_antrenament_fizic.jpg`,
 
