@@ -15,8 +15,8 @@ export default function ActivityCard({ activity, onClick }: Props) {
     activity.price_type === 'free' || activity.price === 0
       ? 'Gratuit'
       : activity.price_type === 'variable'
-      ? 'Nespecificat'
-      : `${activity.price} RON/${activity.price_type === 'monthly' ? 'lună' : 'ședință'}`;
+        ? 'Nespecificat'
+        : `${activity.price} RON/${activity.price_type === 'monthly' ? 'lună' : 'ședință'}`;
 
   const priceColor =
     activity.price_type === 'free' || activity.price === 0
@@ -84,14 +84,26 @@ export default function ActivityCard({ activity, onClick }: Props) {
         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
           <div className="flex flex-col gap-0.5">
             {activity.zone && (
-              <span className="text-xs text-gray-400 flex items-center gap-1">
-                <span>📍</span>
-                <span>{activity.zone}</span>
+              <span className="flex items-center gap-1.5">
+                <svg width="12" height="16" viewBox="0 0 12 16" fill="none">
+                  <path d="M6 0C3 0 0 2.5 0 6C0 10 6 16 6 16C6 16 12 10 12 6C12 2.5 9 0 6 0Z"
+                    stroke="#939D7A" strokeWidth="1.3" strokeLinejoin="round" />
+                  <circle cx="6" cy="6" r="2.5" fill="#939D7A" />
+                </svg>
+                <span className="text-xs" style={{ color: '#7A8465', fontFamily: 'DM Sans, sans-serif' }}>
+                  {activity.zone}
+                </span>
               </span>
             )}
-            <span className="text-xs text-gray-400 flex items-center gap-1">
-              <span>🎂</span>
-              <span>{activity.age_min}–{activity.age_max} ani</span>
+            <span className="flex items-center gap-1.5">
+              <svg width="13" height="18" viewBox="0 0 13 18" fill="none">
+                <ellipse cx="6.5" cy="6" rx="6" ry="7" stroke="#939D7A" strokeWidth="1.3" />
+                <path d="M4 13Q6.5 15 9 13" stroke="#939D7A" strokeWidth="1.3" strokeLinecap="round" />
+                <path d="M6.5 15Q8 18 6.5 20" stroke="#939D7A" strokeWidth="1.2" strokeLinecap="round" />
+              </svg>
+              <span className="text-xs" style={{ color: '#7A8465', fontFamily: 'DM Sans, sans-serif' }}>
+                {activity.age_min}–{activity.age_max} ani
+              </span>
             </span>
           </div>
 

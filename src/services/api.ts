@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // URL-ul backend-ului Railway — schimba cu URL-ul tau exact
-export const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://web-production-31150.up.railway.app/api';
-
+export const API_BASE_URL = 'https://web-production-31150.up.railway.app/api';
+export const WEATHER_API_KEY = '272b5032a77e70425145a4e379117b20';
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
