@@ -43,7 +43,7 @@ export default function ProfilePage() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl p-8 border border-gray-200 mb-6 text-center">
-          <div className="text-4xl mb-3">🧭</div>
+          <div className="text-4xl mb-3"></div>
           <h2 className="text-lg font-bold text-gray-900 mb-1">Niciun profil completat</h2>
           <p className="text-gray-500 text-sm">Completează chestionarul pentru recomandări personalizate</p>
         </div>
@@ -51,7 +51,7 @@ export default function ProfilePage() {
 
       <button onClick={() => navigate('/quiz')}
         className="w-full bg-gray-900 text-white py-3 rounded-full font-bold hover:opacity-90 transition-opacity mb-4">
-        🧭 {activeProfile ? 'Completează din nou quiz-ul' : 'Completează quiz-ul de profil'}
+         {activeProfile ? 'Completează din nou quiz-ul' : 'Completează quiz-ul de profil'}
       </button>
 
       {profiles.length > 1 && (

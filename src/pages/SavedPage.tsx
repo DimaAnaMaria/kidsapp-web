@@ -20,7 +20,7 @@ export default function SavedPage() {
 
   if (!activeProfile) return (
     <div className="max-w-3xl mx-auto px-4 py-16 text-center">
-      <div className="text-5xl mb-4">🧭</div>
+      <div className="text-5xl mb-4"></div>
       <h2 className="text-xl font-bold text-gray-900 mb-2">Niciun profil activ</h2>
       <p className="text-gray-500 mb-6">Completează chestionarul pentru a salva activități</p>
       <button onClick={() => navigate('/profile')}
@@ -33,7 +33,7 @@ export default function SavedPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Salvate ❤️</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Salvate </h1>
         <p className="text-gray-500 mt-1">{activeProfile.child_name} · {activeProfile.child_age} ani</p>
       </div>
       {loading ? (

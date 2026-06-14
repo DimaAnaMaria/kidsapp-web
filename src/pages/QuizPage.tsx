@@ -141,7 +141,7 @@ export default function QuizPage() {
       <button onClick={() => navigate(-1)} className="text-sm text-gray-500 mb-6 block hover:text-gray-700">
         ← Înapoi
       </button>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Hai să ne cunoaștem! 👋</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Hai să ne cunoaștem! </h1>
       <p className="text-gray-500 mb-8">Câteva detalii mai intai</p>
       <form onSubmit={handleInfo} className="bg-white rounded-2xl p-8 border border-gray-200 flex flex-col gap-5">
         <div>
