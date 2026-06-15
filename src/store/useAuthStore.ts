@@ -16,7 +16,6 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: (user, token) => {
     localStorage.setItem('auth_token', token);
     localStorage.setItem('auth_user', JSON.stringify(user));
-    // Sterge profilul activ al utilizatorului anterior
     localStorage.removeItem('active_profile');
     set({ user, token });
   },
@@ -35,7 +34,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       try {
         const user = JSON.parse(userStr) as User;
         set({ user, token });
-      } catch { }
+      } catch {}
     }
   },
 }));

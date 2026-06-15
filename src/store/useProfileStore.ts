@@ -10,7 +10,7 @@ interface ProfileState {
   initialize: () => void;
 }
 
-export const useProfileStore = create<ProfileState>((set, get) => ({
+export const useProfileStore = create<ProfileState>((set) => ({
   activeProfile: null,
   profiles: [],
 
@@ -20,27 +20,31 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
   },
 
   setProfiles: (ps) => {
-    // Verifica daca exista un profil activ salvat in localStorage
+    if (ps.length === 0) {
+      localStorage.removeItem('active_profile');
+      set({ profiles: [], activeProfile: null });
+      return;
+    }
+
     const stored = localStorage.getItem('active_profile');
-    let activeProfile = ps[0] || null;
+    let activeProfile = ps[0];
 
     if (stored) {
       try {
         const storedProfile = JSON.parse(stored) as ChildProfile;
-        // Cauta profilul salvat in lista noua
         const found = ps.find(p => p.id === storedProfile.id);
         if (found) {
-          // Profilul salvat exista — pastreaza-l
           activeProfile = found;
+        } else {
+          localStorage.removeItem('active_profile');
+          activeProfile = ps[0];
         }
-      } catch {}
+      } catch {
+        localStorage.removeItem('active_profile');
+      }
     }
 
-    // Salveaza profilul activ in localStorage
-    if (activeProfile) {
-      localStorage.setItem('active_profile', JSON.stringify(activeProfile));
-    }
-
+    localStorage.setItem('active_profile', JSON.stringify(activeProfile));
     set({ profiles: ps, activeProfile });
   },
 
@@ -50,12 +54,6 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
   },
 
   initialize: () => {
-    const stored = localStorage.getItem('active_profile');
-    if (stored) {
-      try {
-        const profile = JSON.parse(stored) as ChildProfile;
-        set({ activeProfile: profile });
-      } catch {}
-    }
+    set({ activeProfile: null, profiles: [] });
   },
 }));

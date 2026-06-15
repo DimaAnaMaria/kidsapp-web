@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './store/useAuthStore';
-import { useProfileStore } from './store/useProfileStore';
 import Navbar from './components/Navbar';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -27,12 +26,10 @@ function Layout({ children }: { children: JSX.Element }) {
 }
 
 export default function App() {
-  const { initialize: initAuth }    = useAuthStore();
-  const { initialize: initProfile } = useProfileStore();
+  const { initialize: initAuth } = useAuthStore();
 
   useEffect(() => {
     initAuth();
-    initProfile();
   }, []);
 
   return (
