@@ -3,24 +3,25 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useProfileStore } from '../store/useProfileStore';
 import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../constants/theme';
+import { EnrollButton } from '../components/EnrollButton';
 
 export default function ActivityDetailPage() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const activity  = (location.state as any)?.activity;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const activity = (location.state as any)?.activity;
   const { activeProfile } = useProfileStore();
   const [saved, setSaved] = useState(false);
   const startTime = useRef(Date.now());
 
   useEffect(() => {
     if (!activity?.id || !activeProfile?.id) return;
-    const profileId  = activeProfile.id;
+    const profileId = activeProfile.id;
     const activityId = activity.id;
-    api.post(`/activities/${activityId}/interact`, { profileId, action: 'view' }).catch(() => {});
+    api.post(`/activities/${activityId}/interact`, { profileId, action: 'view' }).catch(() => { });
     return () => {
       const duration = Math.round((Date.now() - startTime.current) / 1000);
       if (duration > 2) {
-        api.post(`/activities/${activityId}/interact`, { profileId, action: 'view', durationSeconds: duration }).catch(() => {});
+        api.post(`/activities/${activityId}/interact`, { profileId, action: 'view', durationSeconds: duration }).catch(() => { });
       }
     };
   }, [activity?.id, activeProfile?.id]);
@@ -41,8 +42,8 @@ export default function ActivityDetailPage() {
   const priceLabel = activity.price_type === 'free' || activity.price === 0
     ? 'Gratuit'
     : activity.price_type === 'variable'
-    ? 'Nespecificat'
-    : `${activity.price} RON/${activity.price_type === 'monthly' ? 'lună' : 'ședință'}`;
+      ? 'Nespecificat'
+      : `${activity.price} RON/${activity.price_type === 'monthly' ? 'lună' : 'ședință'}`;
 
   async function handleSave() {
     if (!activeProfile) { alert('Completează mai întâi chestionarul de profil.'); return; }
@@ -55,7 +56,7 @@ export default function ActivityDetailPage() {
 
   async function handleContact() {
     if (!activeProfile) return;
-    await api.post(`/activities/${activity.id}/interact`, { profileId: activeProfile.id, action: 'click_contact' }).catch(() => {});
+    await api.post(`/activities/${activity.id}/interact`, { profileId: activeProfile.id, action: 'click_contact' }).catch(() => { });
   }
 
   const btnBase = {
@@ -198,7 +199,7 @@ export default function ActivityDetailPage() {
       )}
 
       {/* Butoane — acelasi stil */}
-      <div className="flex gap-3">
+      <div className="flex gap-3 flex-wrap">
         {activity.phone && (
           <a href={`tel:${activity.phone}`} onClick={handleContact} style={btnPrimary}
             onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#7A8465')}
@@ -220,6 +221,12 @@ export default function ActivityDetailPage() {
           onMouseLeave={e => { if (!saved) (e.currentTarget as HTMLElement).style.backgroundColor = 'white'; }}>
           {saved ? 'Salvat' : 'Salvează'}
         </button>
+
+        <EnrollButton
+          activityId={activity.id}
+          activityTitle={activity.title}
+          profileId={activeProfile?.id ?? null}
+        />
       </div>
     </div>
   );

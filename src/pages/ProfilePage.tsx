@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useProfileStore } from '../store/useProfileStore';
 import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../constants/theme';
+import { ActivityCalendar } from '../components/ActivityCalendar';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function ProfilePage() {
           <h2 className="text-2xl font-bold" style={{ color: colors.text }}>{activeProfile.child_name}</h2>
           <p className="text-sm mt-1" style={{ color: colors.text }}>{CATEGORY_LABELS[cat]} · {activeProfile.child_age} ani</p>
           <div className="mt-6 grid grid-cols-5 gap-2">
-            {Object.entries(activeProfile.scores).sort((a,b) => b[1]-a[1]).map(([k, v]) => (
+            {Object.entries(activeProfile.scores).sort((a, b) => b[1] - a[1]).map(([k, v]) => (
               <div key={k} className="bg-white bg-opacity-60 rounded-xl p-2 text-center">
                 <div className="text-lg">{CATEGORY_ICONS[k]}</div>
                 <div className="text-xs font-bold" style={{ color: colors.text }}>{v}%</div>
@@ -49,9 +50,17 @@ export default function ProfilePage() {
         </div>
       )}
 
+      {activeProfile && (
+        <div className="bg-white rounded-2xl p-6 border border-gray-200 mb-6">
+          <h3 className="font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+            Calendarul activităților
+          </h3>
+          <ActivityCalendar profileId={activeProfile.id} />
+        </div>
+      )}
       <button onClick={() => navigate('/quiz')}
         className="w-full bg-gray-900 text-white py-3 rounded-full font-bold hover:opacity-90 transition-opacity mb-4">
-         {activeProfile ? 'Completează din nou quiz-ul' : 'Completează quiz-ul de profil'}
+        {activeProfile ? 'Completează din nou quiz-ul' : 'Completează quiz-ul de profil'}
       </button>
 
       {profiles.length > 1 && (
