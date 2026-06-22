@@ -18,7 +18,7 @@ const RECURRENCE_LABEL: Record<string, string> = {
 };
 
 function getActiveDatesInMonth(enrollment: Enrollment, year: number, month: number): number[] {
-  const start      = new Date(enrollment.start_date + 'T00:00:00');
+  const start = new Date(enrollment.start_date);
   const monthStart = new Date(year, month, 1);
   const monthEnd   = new Date(year, month + 1, 0);
   if (start > monthEnd) return [];

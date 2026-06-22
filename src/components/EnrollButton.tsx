@@ -81,7 +81,7 @@ export function EnrollButton({ activityId, activityTitle, profileId }: Props) {
             ✓ Înscris
           </span>
           <span style={{ fontSize: 12, color: '#A89E9C', fontFamily: 'DM Sans, sans-serif' }}>
-            {new Date(enrollment.start_date + 'T00:00:00').toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' })}
+            {new Date(enrollment.start_date).toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' })}
             {' · '}{enrollment.start_time?.slice(0, 5)}
             {enrollment.recurrence !== 'none' && ` · ${RECURRENCE_LABELS[enrollment.recurrence]}`}
           </span>
