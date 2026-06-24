@@ -4,11 +4,13 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useProfileStore } from '../store/useProfileStore';
 import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../constants/theme';
 import { ActivityCalendar } from '../components/ActivityCalendar';
+import { EnrolledActivitiesList } from '../components/EnrolledActivitiesList';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const { activeProfile, profiles, setActiveProfile, clearProfiles } = useProfileStore();
+  console.log('activeProfile:', activeProfile);
 
   function handleLogout() {
     if (window.confirm('Ești sigur că vrei să te deconectezi?')) {
@@ -56,6 +58,14 @@ export default function ProfilePage() {
             Calendarul activităților
           </h3>
           <ActivityCalendar profileId={activeProfile.id} />
+        </div>
+      )}
+      {activeProfile && (
+        <div className="bg-white rounded-2xl p-6 border border-gray-200 mb-6">
+          <h3 className="font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+            Activitățile mele
+          </h3>
+          <EnrolledActivitiesList profileId={activeProfile.id} />
         </div>
       )}
       <button onClick={() => navigate('/quiz')}
