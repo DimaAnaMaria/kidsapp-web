@@ -4,6 +4,7 @@ import api from '../services/api';
 import { useProfileStore } from '../store/useProfileStore';
 import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../constants/theme';
 import { EnrollButton } from '../components/EnrollButton';
+import { ActivityReviews } from '../components/ActivityReviews';
 
 export default function ActivityDetailPage() {
   const navigate = useNavigate();
@@ -198,6 +199,7 @@ export default function ActivityDetailPage() {
         </div>
       )}
 
+      <ActivityReviews activityId={activity.id} />
       {/* Butoane — acelasi stil */}
       <div className="flex gap-3 flex-wrap">
         {activity.phone && (
