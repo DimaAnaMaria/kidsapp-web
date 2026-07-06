@@ -31,7 +31,7 @@ api.interceptors.response.use(
 
 export default api;
 
-// ── Tipuri de date ────────────────────────────────────────────
+// Tipuri de date 
 export interface Activity {
   id: string;
   title: string;
