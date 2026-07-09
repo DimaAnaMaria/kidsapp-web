@@ -37,6 +37,13 @@ export const SUBCATEGORY_IMAGES: Record<string, string> = {
   'academia fotbal': `${BASE}/sportiv_academia_fotbal.jpg`,
   'scrima': `${BASE}/sportiv_scrima.jpg`,
   'rugby': `${BASE}/sportiv_rugby.jpg`,
+  'paintball': `${BASE}/sportiv_generic1.jpg`,
+  'paintball strategie': `${BASE}/sportiv_generic1.jpg`,
+  'drumetie': `${BASE}/sportiv_generic2.jpg`,
+  'mountain bike': `${BASE}/sportiv_generic2.jpg`,
+  'mtb': `${BASE}/sportiv_generic2.jpg`,
+  'supravietuire': `${BASE}/sportiv_generic2.jpg`,
+  'tabara vara': `${BASE}/sportiv_generic1.jpg`,
 
   // ARTIST
   'pictura': `${BASE}/artist_pictura.jpg`,

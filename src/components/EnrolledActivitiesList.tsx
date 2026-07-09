@@ -1,10 +1,13 @@
 // src/components/EnrolledActivitiesList.tsx
 import React, { useState } from 'react';
-import { useEnrollments, EnrollmentData } from '../hooks/useEnrollment';
+import { EnrollmentData, Enrollment } from '../hooks/useEnrollment';
 import api from '../services/api';
 
 interface Props {
   profileId: string;
+  enrollments: Enrollment[];
+  loading: boolean;
+  refetch: () => void;
 }
 
 const RECURRENCE_LABELS: Record<string, string> = {
@@ -266,8 +269,8 @@ function EditEnrollModal({ profileId, activityId, activityTitle, current, onClos
 }
 
 // ── Componenta principala ──────────────────────────────────────────────────────
-export function EnrolledActivitiesList({ profileId }: Props) {
-  const { enrollments, loading, refetch } = useEnrollments(profileId);
+export function EnrolledActivitiesList({ profileId, enrollments, loading, refetch }: Props) {
+  //const { enrollments, loading, refetch } = useEnrollments(profileId);
 
   const [confirmRemove,  setConfirmRemove]  = useState<string | null>(null); // activityId
   const [reviewModal,    setReviewModal]    = useState<{ activityId: string; title: string } | null>(null);

@@ -1,9 +1,11 @@
 // src/components/ActivityCalendar.tsx
 import React, { useState, useMemo, useRef } from 'react';
-import { useEnrollments, Enrollment } from '../hooks/useEnrollment';
+import { Enrollment } from '../hooks/useEnrollment';
 
 interface Props {
   profileId: string;
+    enrollments: Enrollment[];
+  loading: boolean;
 }
 
 const DAYS_RO    = ['Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sa', 'Du'];
@@ -53,8 +55,8 @@ function getActiveDatesInMonth(enrollment: Enrollment, year: number, month: numb
   return dates;
 }
 
-export function ActivityCalendar({ profileId }: Props) {
-  const { enrollments, loading } = useEnrollments(profileId);
+export function ActivityCalendar({ profileId, enrollments, loading }: Props) {
+  //const { enrollments, loading } = useEnrollments(profileId);
   const today = new Date();
   const [viewYear,  setViewYear]  = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());

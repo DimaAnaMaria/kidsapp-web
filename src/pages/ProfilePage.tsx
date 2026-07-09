@@ -5,12 +5,17 @@ import { useProfileStore } from '../store/useProfileStore';
 import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../constants/theme';
 import { ActivityCalendar } from '../components/ActivityCalendar';
 import { EnrolledActivitiesList } from '../components/EnrolledActivitiesList';
+import { useEnrollments } from '../hooks/useEnrollment';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const { activeProfile, profiles, setActiveProfile, clearProfiles } = useProfileStore();
-  console.log('activeProfile:', activeProfile);
+
+  // Un singur useEnrollments la nivel de pagina — partajat intre Calendar si Lista
+  const { enrollments, loading: enrollmentsLoading, refetch } = useEnrollments(
+    activeProfile?.id ?? null
+  );
 
   function handleLogout() {
     if (window.confirm('Ești sigur că vrei să te deconectezi?')) {
@@ -18,7 +23,7 @@ export default function ProfilePage() {
     }
   }
 
-  const cat = activeProfile?.dominant_profile || '';
+  const cat    = activeProfile?.dominant_profile || '';
   const colors = cat ? CATEGORY_COLORS[cat] : null;
 
   return (
@@ -57,17 +62,28 @@ export default function ProfilePage() {
           <h3 className="font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
             Calendarul activităților
           </h3>
-          <ActivityCalendar profileId={activeProfile.id} />
+          <ActivityCalendar
+            profileId={activeProfile.id}
+            enrollments={enrollments}
+            loading={enrollmentsLoading}
+          />
         </div>
       )}
+
       {activeProfile && (
         <div className="bg-white rounded-2xl p-6 border border-gray-200 mb-6">
           <h3 className="font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
             Activitățile mele
           </h3>
-          <EnrolledActivitiesList profileId={activeProfile.id} />
+          <EnrolledActivitiesList
+            profileId={activeProfile.id}
+            enrollments={enrollments}
+            loading={enrollmentsLoading}
+            refetch={refetch}
+          />
         </div>
       )}
+
       <button onClick={() => navigate('/quiz')}
         className="w-full bg-gray-900 text-white py-3 rounded-full font-bold hover:opacity-90 transition-opacity mb-4">
         {activeProfile ? 'Completează din nou quiz-ul' : 'Completează quiz-ul de profil'}

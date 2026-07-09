@@ -84,3 +84,4 @@ export function useEnrollments(profileId: string | null) {
 
   return { enrollments, loading, refetch };
 }
+
