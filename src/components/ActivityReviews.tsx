@@ -1,4 +1,4 @@
-// src/components/ActivityReviews.tsx
+
 // Afiseaza media stelelor + toate reviewurile unei activitati
 // Adauga in ActivityDetailPage.tsx
 
@@ -22,7 +22,7 @@ interface ReviewsData {
 interface Props {
   activityId: string;
 }
-
+///mapeaza un array 1-5 si verifica daca e <= nota rotunjita si coloreaza steaua
 function StarDisplay({ rating, size = 16 }: { rating: number; size?: number }) {
   return (
     <div style={{ display: 'flex', gap: 2 }}>
@@ -38,7 +38,7 @@ export function ActivityReviews({ activityId }: Props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get(`/activities/${activityId}/reviews`)
+    api.get(`/activities/${activityId}/reviews`) ///endpointul REST 
       .then(res => setData(res.data))
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -46,6 +46,8 @@ export function ActivityReviews({ activityId }: Props) {
 
   if (loading) return null;
   if (!data || data.total_reviews === 0) return null;
+
+///daca exista recenzii devine vizibila
 
   return (
     <div style={{ backgroundColor: 'white', border: '1px solid #F8DCD9', borderRadius: 20, padding: '20px 24px', marginBottom: 24 }}>

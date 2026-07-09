@@ -1,4 +1,4 @@
-// src/components/EnrollButton.tsx
+
 import React, { useState } from 'react';
 import { useEnrollment, EnrollmentData } from '../hooks/useEnrollment';
 
@@ -54,6 +54,8 @@ export function EnrollButton({ activityId, activityTitle, profileId }: Props) {
     );
   }
 
+///validare date si formular controlat
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -67,7 +69,7 @@ export function EnrollButton({ activityId, activityTitle, profileId }: Props) {
     }
   };
 
-  // ── Stare: deja inscris ──
+  //  Stare: deja inscris 
   if (enrolled && enrollment) {
     return (
       <>
@@ -140,7 +142,7 @@ export function EnrollButton({ activityId, activityTitle, profileId }: Props) {
     );
   }
 
-  // ── Stare: neinscris ──
+  // Stare: neinscris 
   return (
     <>
       <button
@@ -164,7 +166,7 @@ export function EnrollButton({ activityId, activityTitle, profileId }: Props) {
   );
 }
 
-// ── Modal wrapper ──────────────────────────────────────────────────────────────
+// Modal wrapper: gestioneaza evenimentele de tip click din cadrul completarii formularului
 function Modal({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
   return (
     <div
@@ -181,7 +183,7 @@ function Modal({ children, onClose }: { children: React.ReactNode; onClose: () =
   );
 }
 
-// ── Formular inscriere ─────────────────────────────────────────────────────────
+// Formular inscriere
 interface FormProps {
   title: string;
   form: EnrollmentData;

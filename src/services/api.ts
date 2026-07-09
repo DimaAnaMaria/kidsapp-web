@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// URL-ul backend-ului Railway — schimba cu URL-ul tau exact
+// URL-ul backend-ului Railway 
 export const API_BASE_URL = 'https://web-production-31150.up.railway.app/api';
 
 const api = axios.create({

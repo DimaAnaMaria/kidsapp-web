@@ -1,4 +1,4 @@
-// src/components/ActivityCalendar.tsx
+
 import React, { useState, useMemo, useRef } from 'react';
 import { Enrollment } from '../hooks/useEnrollment';
 
@@ -12,13 +12,14 @@ const DAYS_RO    = ['Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sa', 'Du'];
 const MONTHS_RO  = ['Ianuarie','Februarie','Martie','Aprilie','Mai','Iunie','Iulie','August','Septembrie','Octombrie','Noiembrie','Decembrie'];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  sportiv: '#1D9E75', artist: '#D4537E', pragmatic: '#BA7517', tehnic: '#378ADD', sociabil: '#7F77DD',
+  sportiv: '#BA7517', artist: '#7F77DD', pragmatic: '#1D9E75', tehnic: '#378ADD', sociabil: '#D4A000',
 };
 
 const RECURRENCE_LABEL: Record<string, string> = {
   none: 'O singură dată', daily: 'Zilnic', weekly: 'Săptămânal', monthly: 'Lunar',
 };
 
+///calculeaza unde se plaseaza bulinele in functie de periodicitate
 function getActiveDatesInMonth(enrollment: Enrollment, year: number, month: number): number[] {
   const start = new Date(enrollment.start_date);
   const monthStart = new Date(year, month, 1);
@@ -56,7 +57,7 @@ function getActiveDatesInMonth(enrollment: Enrollment, year: number, month: numb
 }
 
 export function ActivityCalendar({ profileId, enrollments, loading }: Props) {
-  //const { enrollments, loading } = useEnrollments(profileId);
+ 
   const today = new Date();
   const [viewYear,  setViewYear]  = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
@@ -146,7 +147,7 @@ export function ActivityCalendar({ profileId, enrollments, loading }: Props) {
         })}
       </div>
 
-      {/* Tooltip */}
+      {/* popup ul cu detalii intr o zi cu evenimente*/}
       {tooltip && (
         <div
           ref={tooltipRef}

@@ -6,11 +6,11 @@ import { CATEGORY_ICONS, CATEGORY_LABELS } from '../constants/theme';
 
 export default function Navbar() {
   const location  = useLocation();
-  const navigate  = useNavigate();
+  const navigate  = useNavigate();//pt managementul rutelor
   const { user, logout } = useAuthStore();
-  const { activeProfile, profiles, setActiveProfile } = useProfileStore();
+  const { activeProfile, profiles, setActiveProfile } = useProfileStore();//se extrag starile selectate sub forma de variabile reactive
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);//referinta catre arborele dom al ferestrei drop-down
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -45,7 +45,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
 
-          {/* Logo — doar text cu font elegant */}
+          {/* Logo — doar text  */}
           <Link to="/" className="flex items-center gap-1">
             <span
               className="text-2xl font-bold tracking-wide"
@@ -61,7 +61,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Navigare — doar text, fara emoji */}
+          {/* Navigare  */}
           <div className="flex items-center gap-1">
             {links.map(link => (
               <Link
@@ -81,7 +81,7 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Dreapta: dropdown profil + logout */}
+          {/*  dropdown profil + logout */}
           <div className="flex items-center gap-3">
             <div className="relative" ref={dropdownRef}>
               <button

@@ -27,7 +27,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
     }
 
     const stored = localStorage.getItem('active_profile');
-    let activeProfile = ps[0];
+    let activeProfile = ps[0];//implicit setare primul copil din lista
 
     if (stored) {
       try {

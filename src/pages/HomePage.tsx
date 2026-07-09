@@ -9,7 +9,7 @@ import { CATEGORIES, CATEGORY_ICONS, CATEGORY_LABELS } from '../constants/theme'
 
 
 
-// ── Iconita profil temperament ───────────────────────────────────────────────
+//  Iconita profil temperament 
 function TemperamentIcon() {
   return (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -21,7 +21,7 @@ function TemperamentIcon() {
   );
 }
 
-// ── Iconita popularitate ─────────────────────────────────────────────────────
+//  Iconita popularitate 
 function PopularityIcon() {
   return (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -34,7 +34,7 @@ function PopularityIcon() {
   );
 }
 
-// ── Iconita utilizatori similari ─────────────────────────────────────────────
+//  Iconita utilizatori similari
 function UsersIcon() {
   return (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -46,7 +46,7 @@ function UsersIcon() {
   );
 }
 
-// ── Iconita busola pentru quiz ───────────────────────────────────────────────
+//  Iconita busola pentru quiz 
 function CompassIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -61,7 +61,7 @@ function CompassIcon() {
   );
 }
 
-// ── Iconita refresh ───────────────────────────────────────────────────────────
+// Iconita refresh 
 function RefreshIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -115,16 +115,19 @@ export default function HomePage() {
     if (!activeProfile) return;
     setLoadingRec(true);
     try {
+      // 1. Încearcă să ceară recomandările inteligente hibride (de la Node.js -> FastAPI)
       const { data } = await api.get(`/recommendations/${activeProfile.id}?n=6&fresh=false`);
       if (data.data?.length > 0) {
         setRecommended(data.data);
       } else {
+        // 2. Fallback la nivel de date: dacă API-ul răspunde dar lista e goală, adu date brute filtrate pe vârstă și profil dominat
         const { data: fallback } = await api.get('/activities', {
           params: { category: activeProfile.dominant_profile, age: activeProfile.child_age, limit: 6 }
         });
         setRecommended(fallback.data || []);
       }
     } catch {
+      // 3. Fallback la nivel de eroare: dacă serverul de ML este complet offline sau dă eroare, utilizatorul primește totuși activități sortate stabil pe categoria lui
       try {
         const { data: fallback } = await api.get('/activities', {
           params: { category: activeProfile.dominant_profile, age: activeProfile.child_age, limit: 6 }

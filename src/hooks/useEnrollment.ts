@@ -1,4 +1,4 @@
-// src/hooks/useEnrollment.ts
+
 import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 
@@ -28,6 +28,8 @@ export function useEnrollment(profileId: string | null, activityId: string) {
   const [loading, setLoading]       = useState(true);
   const [saving, setSaving]         = useState(false);
 
+  //verifica daca copilul e inscris deja
+
   useEffect(() => {
     if (!profileId || !activityId) { setLoading(false); return; }
     api.get(`/profiles/${profileId}/enrollments/${activityId}`)
@@ -38,6 +40,8 @@ export function useEnrollment(profileId: string | null, activityId: string) {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [profileId, activityId]);
+
+  //functia de inscriere sau editare
 
   const enroll = useCallback(async (data: EnrollmentData) => {
     if (!profileId) return;
@@ -51,6 +55,8 @@ export function useEnrollment(profileId: string | null, activityId: string) {
       setSaving(false);
     }
   }, [profileId, activityId]);
+
+//renuntare
 
   const unenroll = useCallback(async () => {
     if (!profileId) return;

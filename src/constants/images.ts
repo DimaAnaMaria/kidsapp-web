@@ -1,17 +1,8 @@
-/**
- * images.ts — Maparea imaginilor per subcategorie si categorie
- *
- * Logica de selectie:
- * 1. Daca subcategoria are o imagine dedicata → o folosim pe cea specifica
- * 2. Daca subcategoria nu are imagine → alegem din pool-ul categoriei
- * 3. Selectia din pool este determinista bazata pe ID-ul activitatii
- *    → aceeasi activitate primeste mereu aceeasi imagine
- *    → activitati diferite din aceeasi categorie pot primi imagini diferite
- */
+
 
 const BASE = '/images/activities';
 
-// ── Imagini specifice per subcategorie ──────────────────────────────────────
+//  Imagini specifice per subcategorie 
 export const SUBCATEGORY_IMAGES: Record<string, string> = {
 
   // SPORTIV
@@ -118,7 +109,7 @@ export const SUBCATEGORY_IMAGES: Record<string, string> = {
   'mun si dezbateri': `${BASE}/sociabil_generic.jpg`,
 };
 
-// ── Pool de imagini generice per categorie (fallback) ────────────────────────
+// Pool de imagini generice per categorie (fallback) 
 export const CATEGORY_IMAGE_POOL: Record<string, string[]> = {
   'sportiv': [
     `${BASE}/sportiv_generic1.jpg`,

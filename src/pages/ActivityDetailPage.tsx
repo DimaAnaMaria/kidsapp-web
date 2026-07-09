@@ -18,11 +18,11 @@ export default function ActivityDetailPage() {
     if (!activity?.id || !activeProfile?.id) return;
     const profileId = activeProfile.id;
     const activityId = activity.id;
-    api.post(`/activities/${activityId}/interact`, { profileId, action: 'view' }).catch(() => { });
+    api.post(`/activities/${activityId}/interact`, { profileId, action: 'view' }).catch(() => { }); //inregistreaza vizualizarea
     return () => {
       const duration = Math.round((Date.now() - startTime.current) / 1000);
       if (duration > 2) {
-        api.post(`/activities/${activityId}/interact`, { profileId, action: 'view', durationSeconds: duration }).catch(() => { });
+        api.post(`/activities/${activityId}/interact`, { profileId, action: 'view', durationSeconds: duration }).catch(() => { });//inregistreaza timpul petrecut pe o activitate
       }
     };
   }, [activity?.id, activeProfile?.id]);

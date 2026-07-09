@@ -1,4 +1,4 @@
-// src/components/EnrolledActivitiesList.tsx
+
 import React, { useState } from 'react';
 import { EnrollmentData, Enrollment } from '../hooks/useEnrollment';
 import api from '../services/api';
@@ -14,7 +14,7 @@ const RECURRENCE_LABELS: Record<string, string> = {
   none: 'O singură dată', daily: 'Zilnic', weekly: 'Săptămânal', monthly: 'Lunar',
 };
 
-// ── Stele interactive ──────────────────────────────────────────────────────────
+// Stele interactive 
 function StarRating({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const [hovered, setHovered] = useState(0);
   return (
@@ -39,7 +39,7 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
   );
 }
 
-// ── Modal review ───────────────────────────────────────────────────────────────
+// Modal review
 interface ReviewModalProps {
   profileId: string;
   activityId: string;
@@ -147,7 +147,7 @@ function ReviewModal({ profileId, activityId, activityTitle, existingReview, onC
   );
 }
 
-// ── Modal modificare detalii participare ───────────────────────────────────────
+// Modal modificare detalii participare
 interface EditEnrollModalProps {
   profileId: string;
   activityId: string;
@@ -268,10 +268,9 @@ function EditEnrollModal({ profileId, activityId, activityTitle, current, onClos
   );
 }
 
-// ── Componenta principala ──────────────────────────────────────────────────────
+//  Componenta principala 
 export function EnrolledActivitiesList({ profileId, enrollments, loading, refetch }: Props) {
-  //const { enrollments, loading, refetch } = useEnrollments(profileId);
-
+  
   const [confirmRemove,  setConfirmRemove]  = useState<string | null>(null); // activityId
   const [reviewModal,    setReviewModal]    = useState<{ activityId: string; title: string } | null>(null);
   const [editModal,      setEditModal]      = useState<string | null>(null); // activityId
