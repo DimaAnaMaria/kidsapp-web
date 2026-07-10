@@ -14,15 +14,20 @@ export default function ActivityDetailPage() {
   const [saved, setSaved] = useState(false);
   const startTime = useRef(Date.now());
 
+  // Înregistrează vizualizarea la intrare și durata la ieșire
   useEffect(() => {
     if (!activity?.id || !activeProfile?.id) return;
-    const profileId = activeProfile.id;
+    const profileId  = activeProfile.id;
     const activityId = activity.id;
-    api.post(`/activities/${activityId}/interact`, { profileId, action: 'view' }).catch(() => { }); //inregistreaza vizualizarea
+
+    api.post(`/activities/${activityId}/interact`, { profileId, action: 'view' }).catch(() => {});
+
     return () => {
       const duration = Math.round((Date.now() - startTime.current) / 1000);
       if (duration > 2) {
-        api.post(`/activities/${activityId}/interact`, { profileId, action: 'view', durationSeconds: duration }).catch(() => { });//inregistreaza timpul petrecut pe o activitate
+        api.post(`/activities/${activityId}/interact`, {
+          profileId, action: 'view', durationSeconds: duration,
+        }).catch(() => {});
       }
     };
   }, [activity?.id, activeProfile?.id]);
@@ -46,18 +51,59 @@ export default function ActivityDetailPage() {
       ? 'Nespecificat'
       : `${activity.price} RON/${activity.price_type === 'monthly' ? 'lună' : 'ședință'}`;
 
+  // Salvează la favorite + loghează interacțiunea save pentru ML
   async function handleSave() {
     if (!activeProfile) { alert('Completează mai întâi chestionarul de profil.'); return; }
     try {
       await api.post(`/profiles/${activeProfile.id}/saved/${activity.id}`, {});
-      await api.post(`/activities/${activity.id}/interact`, { profileId: activeProfile.id, action: 'save' });
+      await api.post(`/activities/${activity.id}/interact`, {
+        profileId: activeProfile.id, action: 'save',
+      });
       setSaved(true);
-    } catch { alert('Nu s-a putut salva activitatea.'); }
+    } catch {
+      alert('Nu s-a putut salva activitatea.');
+    }
   }
 
+  // Loghează click pe telefon/website pentru ML
   async function handleContact() {
     if (!activeProfile) return;
-    await api.post(`/activities/${activity.id}/interact`, { profileId: activeProfile.id, action: 'click_contact' }).catch(() => { });
+    await api.post(`/activities/${activity.id}/interact`, {
+      profileId: activeProfile.id, action: 'click_contact',
+    }).catch(() => {});
+  }
+
+  // Share nativ pe mobile / fallback clipboard pe desktop + loghează pentru ML
+  async function handleShare() {
+    if (!activeProfile) return;
+
+    const logShare = () =>
+      api.post(`/activities/${activity.id}/interact`, {
+        profileId: activeProfile.id, action: 'share',
+      }).catch(() => {});
+
+    if (navigator.share) {
+      // Mobile — meniu nativ de share (WhatsApp, SMS, etc.)
+      try {
+        await navigator.share({
+          title: activity.title,
+          text:  `Descoperă activitatea: ${activity.title}`,
+          url:   window.location.href,
+        });
+        await logShare(); // loghează doar dacă utilizatorul a distribuit efectiv
+      } catch {
+        // utilizatorul a anulat — nu loghăm
+      }
+    } else {
+      // Desktop — copiem link-ul în clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copiat în clipboard!');
+        await logShare();
+      } catch {
+        alert('Nu s-a putut copia link-ul.');
+      }
+    }
   }
 
   const btnBase = {
@@ -125,7 +171,7 @@ export default function ActivityDetailPage() {
       <div className="flex flex-wrap gap-2 mb-6">
         <Chip label={`${activity.age_min}–${activity.age_max} ani`} />
         <Chip label={priceLabel} />
-        {activity.zone && <Chip label={activity.zone} />}
+        {activity.zone         && <Chip label={activity.zone} />}
         {activity.is_recurring && <Chip label="Curs recurent" />}
         {activity.schedule_time && <Chip label={activity.schedule_time} />}
       </div>
@@ -135,7 +181,8 @@ export default function ActivityDetailPage() {
         {activity.address && (
           <InfoCard title="Locație">
             {activity.location_name && (
-              <p className="font-medium text-sm mb-0.5" style={{ color: '#3D3D3D', fontFamily: 'DM Sans, sans-serif' }}>
+              <p className="font-medium text-sm mb-0.5"
+                style={{ color: '#3D3D3D', fontFamily: 'DM Sans, sans-serif' }}>
                 {activity.location_name}
               </p>
             )}
@@ -161,7 +208,8 @@ export default function ActivityDetailPage() {
         {(activity.phone || activity.organizer_name) && (
           <InfoCard title="Contact">
             {activity.organizer_name && (
-              <p className="font-medium text-sm mb-0.5" style={{ color: '#3D3D3D', fontFamily: 'DM Sans, sans-serif' }}>
+              <p className="font-medium text-sm mb-0.5"
+                style={{ color: '#3D3D3D', fontFamily: 'DM Sans, sans-serif' }}>
                 {activity.organizer_name}
               </p>
             )}
@@ -175,11 +223,13 @@ export default function ActivityDetailPage() {
           </InfoCard>
         )}
         <InfoCard title="Preț">
-          <p className="text-lg font-bold" style={{ color: '#3D3D3D', fontFamily: 'Playfair Display, serif' }}>
+          <p className="text-lg font-bold"
+            style={{ color: '#3D3D3D', fontFamily: 'Playfair Display, serif' }}>
             {priceLabel}
           </p>
           {activity.price_notes && (
-            <p className="text-xs mt-1" style={{ color: '#A89E9C', fontFamily: 'DM Sans, sans-serif' }}>
+            <p className="text-xs mt-1"
+              style={{ color: '#A89E9C', fontFamily: 'DM Sans, sans-serif' }}>
               {activity.price_notes}
             </p>
           )}
@@ -188,42 +238,63 @@ export default function ActivityDetailPage() {
 
       {/* Descriere */}
       {(activity.description || activity.short_description) && (
-        <div className="rounded-2xl p-6 mb-6" style={{ backgroundColor: 'white', border: '1px solid #F8DCD9' }}>
+        <div className="rounded-2xl p-6 mb-6"
+          style={{ backgroundColor: 'white', border: '1px solid #F8DCD9' }}>
           <h3 className="font-bold mb-3 text-sm uppercase tracking-wider"
             style={{ color: '#A89E9C', fontFamily: 'DM Sans, sans-serif' }}>
             Despre activitate
           </h3>
-          <p className="text-sm leading-relaxed" style={{ color: '#5D5D5D', fontFamily: 'DM Sans, sans-serif' }}>
+          <p className="text-sm leading-relaxed"
+            style={{ color: '#5D5D5D', fontFamily: 'DM Sans, sans-serif' }}>
             {activity.description || activity.short_description}
           </p>
         </div>
       )}
 
+      {/* Recenzii */}
       <ActivityReviews activityId={activity.id} />
-      {/* Butoane — acelasi stil */}
+
+      {/* Butoane acțiuni */}
       <div className="flex gap-3 flex-wrap">
+
+        {/* Sună — loghează click_contact */}
         {activity.phone && (
-          <a href={`tel:${activity.phone}`} onClick={handleContact} style={btnPrimary}
+          <a href={`tel:${activity.phone}`} onClick={handleContact}
+            style={btnPrimary}
             onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#7A8465')}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#939D7A')}>
             Sună acum
           </a>
         )}
+
+        {/* Website — loghează click_contact */}
         {activity.website && (
           <a href={activity.website} target="_blank" rel="noopener noreferrer"
+            onClick={handleContact}
             style={btnSecondary}
             onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#F0F2EC')}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'white')}>
             Website
           </a>
         )}
+
+        {/* Salvează — loghează save/unsave */}
         <button onClick={handleSave} disabled={saved}
           style={saved ? btnDisabled : btnSecondary}
           onMouseEnter={e => { if (!saved) (e.currentTarget as HTMLElement).style.backgroundColor = '#F0F2EC'; }}
           onMouseLeave={e => { if (!saved) (e.currentTarget as HTMLElement).style.backgroundColor = 'white'; }}>
-          {saved ? 'Salvat' : 'Salvează'}
+          {saved ? 'Salvat ✓' : 'Salvează'}
         </button>
 
+        {/* Distribuie — loghează share, meniu nativ pe mobile / clipboard pe desktop */}
+        <button onClick={handleShare}
+          style={btnSecondary}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#F0F2EC')}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'white')}>
+          Distribuie
+        </button>
+
+        {/* Înscrie-te */}
         <EnrollButton
           activityId={activity.id}
           activityTitle={activity.title}
@@ -238,7 +309,8 @@ function Chip({ label }: { label: string }) {
   return (
     <div className="flex items-center px-3 py-1.5 rounded-full"
       style={{ backgroundColor: 'white', border: '1px solid #F8DCD9' }}>
-      <span className="text-xs font-medium" style={{ color: '#7A8465', fontFamily: 'DM Sans, sans-serif' }}>
+      <span className="text-xs font-medium"
+        style={{ color: '#7A8465', fontFamily: 'DM Sans, sans-serif' }}>
         {label}
       </span>
     </div>
@@ -247,7 +319,8 @@ function Chip({ label }: { label: string }) {
 
 function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl p-5" style={{ backgroundColor: 'white', border: '1px solid #F8DCD9' }}>
+    <div className="rounded-2xl p-5"
+      style={{ backgroundColor: 'white', border: '1px solid #F8DCD9' }}>
       <h3 className="text-xs font-bold uppercase tracking-wider mb-2"
         style={{ color: '#A89E9C', fontFamily: 'DM Sans, sans-serif' }}>
         {title}
