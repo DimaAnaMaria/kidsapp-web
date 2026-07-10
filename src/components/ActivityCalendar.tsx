@@ -21,21 +21,33 @@ const RECURRENCE_LABEL: Record<string, string> = {
 
 ///calculeaza unde se plaseaza bulinele in functie de periodicitate
 function getActiveDatesInMonth(enrollment: Enrollment, year: number, month: number): number[] {
-  const start = new Date(enrollment.start_date);
   const monthStart = new Date(year, month, 1);
   const monthEnd   = new Date(year, month + 1, 0);
-  if (start > monthEnd) return [];
   const dates: number[] = [];
 
   if (enrollment.recurrence === 'none') {
-    if (start >= monthStart && start <= monthEnd) dates.push(start.getDate());
+    const dateStr = enrollment.start_date?.split('T')[0];
+    if (dateStr) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      if (y === year && m - 1 === month) {
+        dates.push(d);
+      }
+    }
     return dates;
   }
+
+  // pentru celelalte tipuri de recurenta folosim new Date()
+  const start = new Date(enrollment.start_date);
+  if (start > monthEnd) return [];
+
   if (enrollment.recurrence === 'monthly') {
     const candidate = new Date(year, month, start.getDate());
-    if (candidate >= start && candidate >= monthStart && candidate <= monthEnd) dates.push(start.getDate());
+    if (candidate >= start && candidate >= monthStart && candidate <= monthEnd) {
+      dates.push(start.getDate());
+    }
     return dates;
   }
+
   if (enrollment.recurrence === 'weekly') {
     const current = new Date(Math.max(start.getTime(), monthStart.getTime()));
     if (start < monthStart) {
@@ -48,11 +60,13 @@ function getActiveDatesInMonth(enrollment: Enrollment, year: number, month: numb
     }
     return dates;
   }
+
   if (enrollment.recurrence === 'daily') {
     const from = new Date(Math.max(start.getTime(), monthStart.getTime()));
     for (let d = from.getDate(); d <= monthEnd.getDate(); d++) dates.push(d);
     return dates;
   }
+
   return dates;
 }
 
