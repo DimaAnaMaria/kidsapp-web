@@ -23,14 +23,11 @@ export default function ActivityCard({ activity, onClick }: Props) {
       ? { bg: '#F0FBF6', text: '#0A7A51' }
       : { bg: '#F1EFE8', text: '#6B6058' };
 
-  const imageSrc = (activity as any).image_url
-    ? (activity as any).image_url
-    : getActivityImage(
-      activity.id,
-      activity.subcategory,
-      activity.category
-    );
-
+  const imageSrc = getActivityImage(
+    activity.id,
+    activity.subcategory,
+    activity.category
+  );
   return (
     <div
       onClick={onClick}
