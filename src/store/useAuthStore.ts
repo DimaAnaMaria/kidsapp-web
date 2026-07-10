@@ -2,16 +2,18 @@ import { create } from 'zustand';
 import { User } from '../services/api';
 
 interface AuthState {
-  user: User | null;
-  token: string | null;
-  login: (user: User, token: string) => void;
-  logout: () => void;
-  initialize: () => void;
+  user:        User | null;
+  token:       string | null;
+  initialized: boolean;          
+  login:       (user: User, token: string) => void;
+  logout:      () => void;
+  initialize:  () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  token: null,
+  user:        null,
+  token:       null,
+  initialized: false,           
 
   login: (user, token) => {
     localStorage.setItem('auth_token', token);
@@ -28,13 +30,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   initialize: () => {
-    const token = localStorage.getItem('auth_token');
+    const token   = localStorage.getItem('auth_token');
     const userStr = localStorage.getItem('auth_user');
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr) as User;
-        set({ user, token });
+        set({ user, token, initialized: true });
+        return;
       } catch {}
     }
+    
+    set({ initialized: true });
   },
 }));

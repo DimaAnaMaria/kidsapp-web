@@ -26,11 +26,13 @@ function Layout({ children }: { children: JSX.Element }) {
 }
 
 export default function App() {
-  const { initialize: initAuth } = useAuthStore();
+  const { initialize: initAuth,initialized } = useAuthStore();
 
   useEffect(() => {
     initAuth();
   }, []);
+
+   if (!initialized) return null;
 
   return (
     <BrowserRouter>
