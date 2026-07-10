@@ -33,9 +33,10 @@ export default function SavedPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Salvate </h1>
+        <h1 className="text-2xl font-bold text-gray-900">Salvate</h1>
         <p className="text-gray-500 mt-1">{activeProfile.child_name} · {activeProfile.child_age} ani</p>
       </div>
+
       {loading ? (
         <div className="text-center py-12 text-gray-400">Se încarcă...</div>
       ) : saved.length === 0 ? (
@@ -47,8 +48,44 @@ export default function SavedPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {saved.map(a => (
-            <ActivityCard key={a.id} activity={a}
-              onClick={() => navigate(`/activity/${a.id}`, { state: { activity: a } })} />
+            <div key={a.id} className="relative">
+              <ActivityCard
+                activity={a}
+                onClick={() => navigate(`/activity/${a.id}`, { state: { activity: a } })}
+              />
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  try {
+                    await api.delete(`/profiles/${activeProfile.id}/saved/${a.id}`);
+                    await api.post(`/activities/${a.id}/interact`, {
+                      profileId: activeProfile.id,
+                      action: 'unsave',
+                    });
+                    setSaved(prev => prev.filter(s => s.id !== a.id));
+                  } catch {}
+                }}
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  right: 10,
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(255,255,255,0.92)',
+                  border: '1px solid #F8DCD9',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 16,
+                  zIndex: 10,
+                }}
+                title="Elimină din salvate"
+              >
+                🗑️
+              </button>
+            </div>
           ))}
         </div>
       )}
