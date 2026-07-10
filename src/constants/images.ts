@@ -35,6 +35,7 @@ export const SUBCATEGORY_IMAGES: Record<string, string> = {
   'mtb': `${BASE}/sportiv_generic2.jpg`,
   'supravietuire': `${BASE}/sportiv_generic2.jpg`,
   'tabara vara': `${BASE}/sportiv_generic1.jpg`,
+  
 
   // ARTIST
   'pictura': `${BASE}/artist_pictura.jpg`,

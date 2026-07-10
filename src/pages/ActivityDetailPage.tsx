@@ -83,7 +83,7 @@ export default function ActivityDetailPage() {
       }).catch(() => {});
 
     if (navigator.share) {
-      // Mobile — meniu nativ de share (WhatsApp, SMS, etc.)
+      // Mobile — meniu nativ de share 
       try {
         await navigator.share({
           title: activity.title,
